@@ -10,24 +10,27 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static enums.CategoryEnum.ELECTRONICS;
+import static enums.CategoryEnum.OTHERS;
+
 public class ProductService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final static BigDecimal ELECTRONIC_PRICE = BigDecimal.valueOf(1000.00);
 
     public Map<String, List<Product>> groupByCategory(List<Product> products,
                                                       Function<Product, String> categoryExtractor) {
-        return products.stream()
-                .collect(Collectors.groupingBy(categoryExtractor));
+        return Map.copyOf(products.stream()
+                .collect(Collectors.groupingBy(categoryExtractor)));
     }
 
     public Function<Product, String> electronicFilter() {
         return p
                 -> p.getPrice().compareTo(ELECTRONIC_PRICE) >= 0
-                ? "electronics"
-                : "other";
+                ? ELECTRONICS.name()
+                : OTHERS.name();
     }
 
-    public void printValue(Object object) throws JsonProcessingException {
-        System.out.println(objectMapper.writeValueAsString(object));
+    public String printValue(Object object) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(object);
     }
 }
